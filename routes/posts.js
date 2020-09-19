@@ -62,7 +62,7 @@ router.get("/posts/:id/edit", checkPostOwnership, function(req, res) {
 });
 
 // Update
-router.post("/posts/:id", function(req, res) {
+router.post("/posts/:id", checkPostOwnership, function(req, res) {
   // Find and update
   Post.findByIdAndUpdate(req.params.id, req.body.post, function(err, updatedPost) {
     if (err) {

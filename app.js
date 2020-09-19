@@ -8,6 +8,8 @@ var User = require("./models/user");
 var seedDB = require("./seed");
 var passport = require("passport");
 var LocalStrategy = require("passport-local");
+var methodOverride = require("method-override");
+
 
 // Require routes
 var commentRoutes = require("./routes/comments");
@@ -20,6 +22,7 @@ mongoose.connect("mongodb://localhost/onepost", {useNewUrlParser: true, useUnifi
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
+app.use(methodOverride("_method"));
 
 
 // PASSPORT Configuration

@@ -53,6 +53,40 @@ router.get("/posts/:id", function(req, res) {
   });
 }); 
 
+// EDIT 
+router.get("/posts/:id/edit", function(req, res) {
+  Post.findById(req.params.id, function(err, foundPost) {
+    if(err) {
+      res.redirect("/posts");
+    } else {
+      res.render("posts/edit", {post: foundPost});
+    }
+  });
+});
+
+// Update
+router.post("/posts/:id", function(req, res) {
+  // Find and update
+  Post.findByIdAndUpdate(req.params.id, req.body.post, function(err, updatedPost) {
+    if (err) {
+      res.redirect("/posts");
+    } else {
+      res.redirect("/posts/" + req.params.id);
+    }
+  });
+});
+
+// DESTORY
+router.delete("/posts/:id", function(req, res) {
+  Post.findByIdAndRemove(req.params.id, function(err) {
+    if (err) {
+      res.redirect("/posts");
+    } else {
+      res.redirect("/posts");
+    }
+  });
+});
+
 function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();

@@ -54,14 +54,11 @@ router.get("/posts/:id", function(req, res) {
 }); 
 
 // EDIT 
-router.get("/posts/:id/edit", function(req, res) {
-  Post.findById(req.params.id, function(err, foundPost) {
-    if(err) {
-      res.redirect("/posts");
-    } else {
-      res.render("posts/edit", {post: foundPost});
-    }
-  });
+router.get("/posts/:id/edit", checkPostOwnership, function(req, res) {
+      // is user logged in
+      Post.findById(req.params.id, function(err, foundPost) {  
+        res.render("posts/edit", {post: foundPost});
+      });
 });
 
 // Update
@@ -77,7 +74,7 @@ router.post("/posts/:id", function(req, res) {
 });
 
 // DESTORY
-router.delete("/posts/:id", function(req, res) {
+router.delete("/posts/:id", checkPostOwnership, function(req, res) {
   Post.findByIdAndRemove(req.params.id, function(err) {
     if (err) {
       res.redirect("/posts");
@@ -92,6 +89,24 @@ function isLoggedIn(req, res, next) {
     return next();
   }
   res.redirect("/login");
+}
+
+function checkPostOwnership(req, res, next) {
+  if (req.isAuthenticated()) {
+    Post.findById(req.params.id, function(err, foundPost) {
+      if(err) {
+        res.redirect("back");
+      } else {
+        if (foundPost.author.id.equals(req.user._id)) {
+          next();
+        } else {
+          res.redirect("back");
+        }
+      }
+    });
+  } else {
+    res.redirect("back");
+  }
 }
 
 module.exports = router;
